@@ -57,5 +57,5 @@ This is illustrated within `./test_subclassing.py`
 
 
 
-[CEF]   <https://protect724.hp.com/docs/DOC-1072> "CEF Documentation"
-[LEEF]  <https://www.ibm.com/developerworks/community/wikis/form/anonymous/api/wiki/9989d3d7-02c1-444e-92be-576b33d2f2be/page/3dc63f46-4a33-4e0b-98bf-4e55b74e556b/attachment/a19b9122-5940-4c89-ba3e-4b4fc25e2328/media/QRadar_LEEF_Format_Guide.pdf> "LEEF Documentation"
+[CEF]:   <https://protect724.hp.com/docs/DOC-1072> "CEF Documentation"
+[LEEF]:  <https://www.ibm.com/developerworks/community/wikis/form/anonymous/api/wiki/9989d3d7-02c1-444e-92be-576b33d2f2be/page/3dc63f46-4a33-4e0b-98bf-4e55b74e556b/attachment/a19b9122-5940-4c89-ba3e-4b4fc25e2328/media/QRadar_LEEF_Format_Guide.pdf> "LEEF Documentation"
