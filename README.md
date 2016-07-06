@@ -19,6 +19,7 @@ The following health monitoring and threat intel import events are supported:
 | 2020          | Threat Intel  | URI Observable Import         |
 
 A successful import would generate the following CEF events:
+
     CEF:0|Open Source|Observable Importer|0.1|1000|Observable Import started|Low|
     CEF:0|Open Source|Observable Importer|0.1|2000|IP Observable Import|Low|destinationAddress=192.0.2.6
     (...)
@@ -26,6 +27,7 @@ A successful import would generate the following CEF events:
     CEF:0|Open Source|Observable Importer|0.1|1001|Observable Import successful|Low|deviceCustomNumber2Label=Observables imported deviceCustomNumber1=11
 
 A failed import would generate the following CEF events:
+
     CEF:0|Open Source|Observable Importer|0.1|1000|Observable Import started|Low|
     CEF:0|Open Source|Observable Importer|0.1|4000|Observable Import failed|High|deviceCustomString2Label=Failure Reason deviceCustomString1=list index out of range (list index out of range)
 
