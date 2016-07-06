@@ -77,33 +77,85 @@ class ObservableImporter:
         self.cef_sender = CEFSender(**kwargs)
 
     def import_observables(self):
+        cef_dict = {}
+        observable_count = 0
         self.cef_sender.send_cef(
                             name="Observable Import started",
-                            signature_id=0,
+                            signature_id=1000,
                             severity="Low",
                             )
         try:
-            self.cust_import_observables()
+            observable_count = self.cust_import_observables()
 
         except Exception as e:
-            print e
             failure_reason = "{0} ({1})".format(e,e)
+            cef_dict["deviceCustomString1"]=failure_reason
+            cef_dict["deviceCustomString2Label"]="Failure Reason"
             self.cef_sender.send_cef(
                                 name="Observable Import failed",
-                                signature_id=2,
+                                signature_id=4000,
                                 severity="High",
-                                msg=failure_reason,
+                                cef_dict=cef_dict,
                                 )
         else:
+            cef_dict["deviceCustomNumber1"]=observable_count
+            cef_dict["deviceCustomNumber2Label"]="Observables imported"
             self.cef_sender.send_cef(
                                 name="Observable Import successful",
-                                signature_id=1,
+                                signature_id=1001,
                                 severity="Low",
+                                cef_dict=cef_dict,
                                 )
 
     def cust_import_observables(self):
         """This method is supposed to be overwritten by child classes to provide the actual parsing. For each observable, self.cef_sender.send_cef(...) needs to be called."""
-        pass
+        self.send_observable("ip", "192.0.2.1")
+        self.send_observable("IP", "192.0.2.2", port="1234")
+        self.send_observable("domain", "bad.example.com")
+        self.send_observable("Domain", "example.com", port="1234")
+        self.send_observable("URL", "http://www.example.com/tasty-spam/eggs.php?ham=delicious&bacon=lovely")
+
+    def send_observable(self, observable_type, observable, port=None, **kwargs):
+        """Send observables of types IP, domain or URI via configured CEFSender."""
+
+        observable_type = observable_type.lower()
+        severity = "Low"
+        cef_dict = {}
+
+        if observable_type in ["ip", "ip_addr"]:
+            cef_dict["destinationAddress"] = observable
+            if not port:
+                name = "IP Observable Import"
+                signature_id = 2000
+            else:
+                name = "IP+Port Observable Import"
+                signature_id = 2001
+                cef_dict["destinationAddress"] = observable
+        elif observable_type in ["domain"]:
+            cef_dict["destinationHostname"] = observable
+            if not port:
+                name = "Domain Observable Import"
+                signature_id = 2010
+            else:
+                name = "Domain+Port Observable Import"
+                signature_id = 2011
+                cef_dict["destinationPort"] = observable
+        elif observable_type in ["uri", "url"]:
+            name = "URI Observable Import"
+            signature_id = 2020
+            # to-do: split observable by requestUrlHost, requestUrlPort and requestUrlProtocol
+            cef_dict["requestUrlHost"] = observable
+        else:
+            name = "Invalid Observable"
+            signature_id = 4001
+            severity = "Medium"
+
+        self.cef_sender.send_cef(
+                            name=name,
+                            signature_id=signature_id,
+                            severity=severity,
+                            cef_dict=cef_dict,
+                            )
 
 # requires ~/.vimrc to contain "set modeline":
 # vim: tabstop=4 expandtab shiftwidth=4 softtabstop=4 autoindent
