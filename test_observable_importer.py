@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import observables
+import observable_importer
 
-observable_importer = observables.ObservableImporter()
+observable_importer = observable_importer.ObservableImporter()
 
 observable_importer.import_observables()
 

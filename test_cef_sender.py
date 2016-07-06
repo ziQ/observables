@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-import observables
+import observable_importer
 
-ham_sender = observables.CEFSender()
+ham_sender = observable_importer.CEFSender()
 ham_sender.send_cef()
 ham_sender.send_cef(name="My Event")
 
 
-ham_sender = observables.CEFSender(
+ham_sender = observable_importer.CEFSender(
                  syslog_server="tcp+tls://127.0.0.10:514",
                  device_vendor="ACME",
                  device_product="UDP Spray'n'Pray",

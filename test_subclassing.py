@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import observables
+import observable_importer
 
-class MyImporter(observables.ObservableImporter):
+class MyImporter(observable_importer.ObservableImporter):
     def cust_import_observables(self):
         """This method is supposed to be overwritten by child classes to provide the actual parsing. For each observable, self.cef_sender.send_cef(...) needs to be called."""
 
@@ -20,7 +20,7 @@ class MyImporter(observables.ObservableImporter):
 my_importer = MyImporter()
 my_importer.import_observables()
 
-class FailingImporter(observables.ObservableImporter):
+class FailingImporter(observable_importer.ObservableImporter):
     def cust_import_observables(self):
         """This method is supposed to be overwritten by child classes to provide the actual parsing. For each observable, self.cef_sender.send_cef(...) needs to be called."""
 
