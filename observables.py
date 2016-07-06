@@ -1,7 +1,7 @@
 import string
 
 class SyslogSender:
-    """Send out Syslog messages."""
+    """Sends Syslog messages."""
 
     def __init__(self, **kwargs):
         """Initiate Syslog server settings."""
@@ -21,6 +21,7 @@ class SyslogSender:
         print syslog_message
 
 class CEFSender:
+    """Sends standard compliant CEF messages."""
 
     def __init__(self, **kwargs):
         """Initiate global CEF header fields (i.e., deviceVendor)"""
@@ -53,6 +54,56 @@ class CEFSender:
 
         self.syslog_sender.send_syslog(syslog_message)
 
+
+class ObservableImporter:
+    """Parse some input file (snort rules, or whichever) for observables, then send all observables in CEF format to a configured Syslog receiver.
+
+    While doing so, generate meaningful health events and send these in CEF format to the same Syslog server. This significantly improves troubleshooting capabilities for Threat Intel imports.
+
+    Health events:
+    - import started
+    - import successful
+    - import failed (including failure reason)
+
+    Import events:
+    - ip observable import
+    - ip+port observable import
+    - domain observable import
+    - domain+port observable import
+    - uri observable import
+    """
+
+    def __init__(self, **kwargs):
+        self.cef_sender = CEFSender(**kwargs)
+
+    def import_observables(self):
+        self.cef_sender.send_cef(
+                            name="Observable Import started",
+                            signature_id=0,
+                            severity="Low",
+                            )
+        try:
+            self.cust_import_observables()
+
+        except Exception as e:
+            print e
+            failure_reason = "{0} ({1})".format(e,e)
+            self.cef_sender.send_cef(
+                                name="Observable Import failed",
+                                signature_id=2,
+                                severity="High",
+                                msg=failure_reason,
+                                )
+        else:
+            self.cef_sender.send_cef(
+                                name="Observable Import successful",
+                                signature_id=1,
+                                severity="Low",
+                                )
+
+    def cust_import_observables(self):
+        """This method is supposed to be overwritten by child classes to provide the actual parsing. For each observable, self.cef_sender.send_cef(...) needs to be called."""
+        pass
 
 # requires ~/.vimrc to contain "set modeline":
 # vim: tabstop=4 expandtab shiftwidth=4 softtabstop=4 autoindent
