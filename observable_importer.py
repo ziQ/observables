@@ -87,10 +87,13 @@ class ObservableImporter:
         try:
             observable_count = self.cust_import_observables()
 
-        except Exception as e:
-            failure_reason = "{0} ({1})".format(e,e)
-            cef_dict["deviceCustomString1"]=failure_reason
-            cef_dict["deviceCustomString2Label"]="Failure Reason"
+        except Exception as exception:
+            e, m = exception.__class__.__name__, exception
+            tpl = "{exception} ({message})"
+            failure_reason = tpl.format(exception=e, message=m)
+
+            cef_dict["deviceCustomString1"] = failure_reason
+            cef_dict["deviceCustomString1Label"] = "Failure Reason"
             self.cef_sender.send_cef(
                                 name="Observable Import failed",
                                 signature_id=4000,
@@ -98,8 +101,8 @@ class ObservableImporter:
                                 cef_dict=cef_dict,
                                 )
         else:
-            cef_dict["deviceCustomNumber1"]=observable_count
-            cef_dict["deviceCustomNumber2Label"]="Observables imported"
+            cef_dict["deviceCustomNumber1"] = observable_count
+            cef_dict["deviceCustomNumber1Label"] = "Observable Count"
             self.cef_sender.send_cef(
                                 name="Observable Import successful",
                                 signature_id=1001,
