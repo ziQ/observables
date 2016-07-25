@@ -1,4 +1,6 @@
 import string
+import logging
+import logging.handlers
 
 class SyslogSender:
     """Sends Syslog messages."""
@@ -9,16 +11,24 @@ class SyslogSender:
         kwargs.setdefault("syslog_server","udp://127.0.0.1:514")
 
         # to-do: extract fields from kwargs["syslog_server"]
-        self.syslog_proto  = ""
+        self.syslog_proto  = "udp"
         self.syslog_server = ""
         self.syslog_port   = ""
 
+        if self.syslog_proto == "udp":
+            handler = logging.handlers.SysLogHandler()
+        else:
+            handler = logging.StreamHandler()
+
+        formatter = logging.Formatter("%(message)s")
+        handler.setFormatter(formatter)
+        self.logger = logging.getLogger("Syslog")
+        self.logger.addHandler(handler)
+        self.logger.setLevel(logging.INFO)
+
     def send_syslog(self, syslog_message):
         """Send a message, as defined by Syslog server settings."""
-
-        # to-do: send syslog event via UDP socket or whatever is
-        #        requested through __init_syslog_settings()
-        print syslog_message
+        self.logger.info(syslog_message)
 
 class CEFSender:
     """Sends standard compliant CEF messages."""
