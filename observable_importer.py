@@ -56,7 +56,7 @@ class CEFSender:
 
         kwargs.setdefault("signature_id", 0x0815)
         kwargs.setdefault("name","Standard Event")
-        kwargs.setdefault("severity","Unknown Severity")
+        kwargs.setdefault("severity","Unknown")
         kwargs.setdefault("cef_dict",{})
         kwargs["extension"] = " ".join(["{0}={1}".format(k,v) for k,v in kwargs["cef_dict"].iteritems()])
 
@@ -102,8 +102,8 @@ class ObservableImporter:
             tpl = "{exception} ({message})"
             failure_reason = tpl.format(exception=e, message=m)
 
-            cef_dict["deviceCustomString1"] = failure_reason
-            cef_dict["deviceCustomString1Label"] = "Failure Reason"
+            cef_dict["cs1"] = failure_reason
+            cef_dict["cs1Label"] = "Failure Reason"
             self.cef_sender.send_cef(
                                 name="Observable Import failed",
                                 signature_id=4000,
@@ -111,8 +111,8 @@ class ObservableImporter:
                                 cef_dict=cef_dict,
                                 )
         else:
-            cef_dict["deviceCustomNumber1"] = observable_count
-            cef_dict["deviceCustomNumber1Label"] = "Observable Count"
+            cef_dict["cn1"] = observable_count
+            cef_dict["cn1Label"] = "Observable Count"
             self.cef_sender.send_cef(
                                 name="Observable Import successful",
                                 signature_id=1001,
@@ -136,28 +136,28 @@ class ObservableImporter:
         cef_dict = {}
 
         if observable_type in ["ip", "ip_addr"]:
-            cef_dict["destinationAddress"] = observable
+            cef_dict["dst"] = observable
             if not port:
                 name = "IP Observable Import"
                 signature_id = 2000
             else:
                 name = "IP+Port Observable Import"
                 signature_id = 2001
-                cef_dict["destinationAddress"] = observable
+                cef_dict["dst"] = observable
         elif observable_type in ["domain"]:
-            cef_dict["destinationHostname"] = observable
+            cef_dict["dhost"] = observable
             if not port:
                 name = "Domain Observable Import"
                 signature_id = 2010
             else:
                 name = "Domain+Port Observable Import"
                 signature_id = 2011
-                cef_dict["destinationPort"] = observable
+                cef_dict["dpt"] = observable
         elif observable_type in ["uri", "url"]:
             name = "URI Observable Import"
             signature_id = 2020
-            # to-do: split observable by requestUrlHost, requestUrlPort and requestUrlProtocol
-            cef_dict["requestUrlHost"] = observable
+            # to-do: connector will split URL
+            cef_dict["request"] = observable
         else:
             name = "Invalid Observable"
             signature_id = 4001
